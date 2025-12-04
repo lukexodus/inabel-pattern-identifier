@@ -1,6 +1,6 @@
 # Inabel Pattern Identification System
 
-An AI-powered system for identifying traditional Ilocano textile patterns using Prolog reasoning engine with a modern web interface.
+An AI-powered system for identifying traditional Ilocano textile patterns using a Prolog reasoning engine with a modern web interface.
 
 ![Architecture](https://img.shields.io/badge/Architecture-Hybrid-blue)
 ![Frontend](https://img.shields.io/badge/Frontend-HTML%2FJS-yellow)
@@ -9,44 +9,53 @@ An AI-powered system for identifying traditional Ilocano textile patterns using 
 
 ## 🌟 Overview
 
-This system helps identify 23 different traditional Inabel weaving patterns from the Ilocos region of the Philippines. It uses a hybrid architecture where:
+This system helps identify **22 different traditional Inabel weaving patterns** from the Ilocos region of the Philippines. It uses a hybrid architecture where:
 
-- **Prolog** handles the reasoning logic and pattern matching
-- **Python/Flask** provides a REST API interface
+- **Prolog** handles the reasoning logic, pattern matching, and knowledge base
+- **Python/Flask** provides a REST API interface via subprocess communication
 - **HTML/JavaScript** delivers an interactive user experience
 
 ## 🏗️ Architecture
 
 ```
-Frontend (Browser) ←→ Flask API ←→ Prolog Engine
+┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
+│   Frontend      │     │   Flask API     │     │  SWI-Prolog     │
+│  (HTML/JS)      │ ←→  │   (Python)      │ ←→  │  Subprocess     │
+│  index-api.html │     │   server.py     │     │  inabel.ai.pl   │
+└─────────────────┘     └─────────────────┘     └─────────────────┘
 ```
 
-The logic resides entirely in Prolog (`inabel.ai.pl`), making it:
-- ✅ Easy to maintain and update
-- ✅ Verifiable and correct
-- ✅ Editable by domain experts
-- ✅ Independent of frontend implementation
+### Key Design Decisions
+
+- **Subprocess-based Prolog Integration**: Uses a long-lived SWI-Prolog subprocess with JSON protocol over stdin/stdout (not pyswip embedding)
+- **Pure Prolog Logic**: All identification logic resides in `inabel.ai.pl`
+- **Session-based Identification**: Supports interactive Q&A sessions with state management
+- **Smart Identification**: Uses unique feature detection for immediate pattern matching and elimination-based reasoning for shared features
 
 ## 📁 Project Structure
 
 ```
 inabel_ai/
-├── index.html              # Standalone version (no backend)
-├── index-api.html          # API version (with backend)
-├── app.js                  # Standalone JavaScript
-├── app-api.js              # API client JavaScript
-├── styles.css              # Shared styles
+├── index-api.html          # Web frontend (API version)
+├── app-api.js              # Frontend JavaScript (API client)
+├── styles.css              # CSS styles
 ├── inabel.ai.pl            # Prolog knowledge base (MAIN LOGIC)
-├── start.sh                # Quick start script
-├── ARCHITECTURE.md         # Detailed architecture docs
-├── IMPLEMENTATION_NOTES.md # Implementation notes
+├── README.md               # This file
+│
 ├── backend/
-│   ├── server.py           # Flask REST API
-│   ├── prolog_interface.py # Python-Prolog bridge
-│   ├── requirements.txt    # Python dependencies
-│   └── README.md           # Backend documentation
-└── images/                 # Pattern images
-    └── (various pattern images)
+│   ├── server.py           # Flask REST API server
+│   ├── prolog_interface.py # Python-Prolog subprocess bridge
+│   ├── test_inabel_api.py  # API integration tests
+│   ├── test_prolog_interface.py  # Interface unit tests
+│   ├── test_prolog_process.py    # Process communication tests
+│   ├── test_system.py      # System-level tests
+│   └── venv/               # Python virtual environment
+│
+├── images/                 # Pattern reference images (32 files)
+│   ├── binakul-*.jpg/png
+│   ├── sinan-sabong-*.jpg
+│   ├── kusikos-*.jpg/webp
+│   └── ... (other pattern images)
 ```
 
 ## 🚀 Quick Start
@@ -68,21 +77,6 @@ inabel_ai/
 
 ### Installation & Running
 
-#### Option 1: Quick Start Script (Linux/macOS)
-
-```bash
-./start.sh
-```
-
-This will:
-1. Check prerequisites
-2. Create virtual environment
-3. Install dependencies
-4. Test Prolog knowledge base
-5. Start the Flask server
-
-#### Option 2: Manual Setup
-
 ```bash
 # 1. Navigate to backend
 cd backend
@@ -92,7 +86,7 @@ python3 -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
 
 # 3. Install dependencies
-pip install -r requirements.txt
+pip install flask flask-cors
 
 # 4. Start server
 python server.py
@@ -105,55 +99,42 @@ The server will start at `http://localhost:5000`
 1. **Open the frontend**: Open `index-api.html` in your web browser
 2. **Click "Start Identification"**: Begin the pattern identification process
 3. **Answer questions**: Respond to questions about the pattern's visual features
-4. **Get results**: The system will identify the pattern or suggest alternatives
+4. **Get results**: The system will identify the pattern with cultural significance and reference images
 
 ## 🎯 Features
 
-### Pattern Database
-- 23 traditional Inabel patterns
-- Comprehensive feature descriptions
-- Cultural significance information
-- Reference images and sources
+### Pattern Knowledge Base
+- **22 traditional Inabel patterns** with comprehensive metadata
+- **45+ visual features** for pattern discrimination
+- Cultural significance descriptions
+- Reference images for each pattern
+- Academic and cultural source references
 
-### Identification System
-- Interactive question-based identification
-- Intelligent question ordering
-- Handles ambiguous cases
-- Provides detailed pattern information
+### Identification Engine
+- **Unique Feature Detection**: Immediate identification when a unique feature is confirmed
+- **Elimination-based Reasoning**: Progressive filtering using YES/NO responses
+- **Minimum Confidence Threshold**: Requires at least 3 questions before concluding (for shared features)
+- **Best Match Fallback**: Returns most likely pattern when questions are exhausted
 
 ### Technical Features
-- Pure Prolog logic engine
-- RESTful API interface
-- Session-based identification
-- Real-time reasoning
-- Responsive web interface
+- **JSON Protocol**: Clean communication between Python and Prolog via stdin/stdout
+- **Session Management**: UUID-based session tracking for concurrent users
+- **RESTful API**: Standard HTTP endpoints for all operations
+- **CORS Enabled**: Frontend can run from any origin
 
-## 📖 Usage Examples
+## 📡 API Endpoints
 
-### Using the Web Interface
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `GET` | `/api/health` | Health check |
+| `POST` | `/api/start` | Start new identification session |
+| `POST` | `/api/answer` | Submit answer to current question |
+| `POST` | `/api/identify` | One-shot identification (no session) |
+| `GET` | `/api/patterns` | Get all patterns |
+| `GET` | `/api/pattern/<name>` | Get specific pattern details |
+| `GET` | `/api/features` | Get all features with questions |
 
-1. **Start Identification**: Click the start button
-2. **Answer Questions**: Respond to visual feature questions
-3. **View Results**: See identified pattern with details
-
-### Direct Prolog Usage
-
-```bash
-swipl -s inabel.ai.pl
-```
-
-```prolog
-?- start.
-% Interactive CLI mode
-
-?- identify_pattern_api([[geometric, yes], [repeating, yes]], Result).
-% Direct query
-
-?- get_all_pattern_names(Names).
-% Get all patterns
-```
-
-### API Usage
+### Example API Usage
 
 ```bash
 # Start session
@@ -162,92 +143,124 @@ curl -X POST http://localhost:5000/api/start
 # Submit answer
 curl -X POST http://localhost:5000/api/answer \
   -H "Content-Type: application/json" \
-  -d '{"session_id": "...", "feature": "geometric", "answer": "yes"}'
+  -d '{"session_id": "uuid-here", "feature": "geometric", "answer": "yes"}'
 
 # Get all patterns
 curl http://localhost:5000/api/patterns
 ```
 
-## 🔧 Development
+## 🧠 Prolog Knowledge Base
 
-### Modifying Patterns
-
-Edit `inabel.ai.pl`:
+### Pattern Definition Structure
 
 ```prolog
 pattern(pattern_name, 
-    [feature1, feature2, ...],
-    'Cultural meaning',
-    'bootstrap-icon',
-    'css-class',
-    ['image1.jpg', 'image2.jpg'],
-    [ref('Title', 'URL'), ...]).
+    [feature1, feature2, ...],      % Visual features
+    'Cultural meaning',              % Significance description
+    'bi-icon-name',                  % Bootstrap icon
+    'css-placeholder-class',         % CSS class for placeholder
+    ['images/img1.jpg', ...],        % Reference images
+    [ref('Title', 'URL'), ...]).     % Academic references
 ```
 
-### Adding Features
+### Feature Question Definition
 
-1. Add feature to a pattern's feature list
-2. Add feature question:
 ```prolog
-feature_question(new_feature, 'Your question here?').
+feature_question(feature_name, 'Question text shown to user?').
 ```
 
-### Testing
+### Direct Prolog Usage
 
 ```bash
-# Test Prolog
 swipl -s inabel.ai.pl
-?- start.
-
-# Test Python interface
-cd backend
-python prolog_interface.py
-
-# Test API
-python server.py
-# Then use curl or Postman
 ```
 
-## 📚 Documentation
+```prolog
+?- start.                    % Interactive CLI mode
 
-- **[ARCHITECTURE.md](ARCHITECTURE.md)** - Detailed architecture documentation
-- **[backend/README.md](backend/README.md)** - Backend API documentation
-- **[IMPLEMENTATION_NOTES.md](IMPLEMENTATION_NOTES.md)** - Original implementation notes
+?- identify_pattern_api([[geometric, yes], [repeating, yes]], Result).
+                             % Direct query
+
+?- get_all_pattern_names(Names).
+                             % Get all patterns
+
+?- get_all_features(Features).
+                             % Get all features
+```
 
 ## 🎨 Patterns Included
 
-The system can identify these traditional Inabel patterns:
+| Pattern | Key Features | Cultural Meaning |
+|---------|--------------|------------------|
+| **Binakul** | geometric, dizzying, optical_illusion | Wards off evil spirits |
+| **Sinan Sabong** | floral, stylized_figure | Represents flowers |
+| **Kusikos** | spiral, geometric, repeating | Whirlpools or strong winds |
+| **Inuritan** | geometric, linear, striped_pattern | Simple geometric lines |
+| **Mata-mata** | geometric, small_repeating, diamond_shape | Rice grains, abundance |
+| **Sinan Tao** | anthropomorphic, stylized_figure | Human figures, ancestors |
+| **Sinan Kabalyo** | figurative_animal, stylized_figure | Horse, travel and power |
+| **Binetwagan** | textured_surface, three_dimensional | Multi-heddle 3D patterns |
+| **Sinukitan** | brocade_effect, floating_motifs | Highest weaving mastery |
+| **Kundiman** | white_base, flower_petals, multi_heddle | Sacred ceremonial textile |
+| **Dinapat** | full_coverage, stars_diamonds | "Full" seamless design |
+| **Banderado** | striped_pattern, minimal_colors | Banded simplicity |
+| **Kinkinelleng** | grid_pattern, landscape_inspired | Parcels of farmlands |
+| **Gikgik** | two_headed_bird, symmetrical | Folklore two-headed bird |
+| **Pabo** | peacock_motif, ornate_tail | Peacock beauty |
+| **Sinan Bulong** | palm_leaf, fern_like | Palm/fern vegetation |
+| **Kinarkarayan ken Sinan Ugsa** | zigzag_river, figurative_animal | River and deer |
+| **Kinarkarayan ken Sinan Tokak** | zigzag_river, full_coverage | River and frog |
+| **Kinarkarayan ken Dyamante Ti Reyna** | diamond_shape, zigzag_river | River and queen's diamonds |
+| **Sinan Paddak Ti Pusa** | geometric, symmetrical | Cat's paw print |
+| **Kinurkuros** | geometric, plain_weave | Plaid/checkered |
+| **Rinitrit Concha-Concha** | geometric, grid_pattern | Capiz window design |
 
-- Binakul (geometric optical illusion)
-- Sinan Sabong (floral motifs)
-- Kusikos (spiral patterns)
-- Inuritan (linear stripes)
-- Mata-mata (diamond rice grains)
-- Sinan Tao (human figures)
-- Sinan Kabalyo (horse motifs)
-- Binetwagan (3D textured weave)
-- Sinukitan (brocade effect)
-- Kundiman (white floral blanket)
-- Dinapat (full coverage patterns)
-- Banderado (striped bands)
-- Kinkinelleng (farmland grid)
-- Gikgik (two-headed bird)
-- Pabo (peacock design)
-- Sinan Bulong (palm leaf)
-- Kinarkarayan ken Sinan Ugsa (river and deer)
-- Kinarkarayan ken Sinan Tokak (river and frog)
-- Kinarkarayan ken Dyamante Ti Reyna (river and diamonds)
-- Sinan Paddak Ti Pusa (cat's paw)
-- Kinurkuros (plaid/checkered)
-- Rinitrit Concha-Concha (capiz window)
+## 🧪 Testing
 
-## 🤝 Contributing
+```bash
+cd backend
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Test thoroughly
-5. Submit a pull request
+# Run all tests
+python -m pytest
+
+# Test specific components
+python test_prolog_process.py      # Prolog subprocess communication
+python test_prolog_interface.py    # Python interface layer
+python test_inabel_api.py          # REST API endpoints
+python test_system.py              # End-to-end system tests
+```
+
+## 🔧 Development
+
+### Adding a New Pattern
+
+1. Add pattern fact in `inabel.ai.pl`:
+```prolog
+pattern(new_pattern_name, 
+    [feature1, feature2],
+    'Cultural meaning',
+    'bi-icon',
+    'css-class',
+    ['images/new-pattern-1.jpg'],
+    [ref('Source', 'url')]).
+```
+
+2. Add any new feature questions:
+```prolog
+feature_question(new_feature, 'Does the pattern have this feature?').
+```
+
+3. Add reference images to `images/` folder
+
+4. Restart the Flask server to reload the Prolog KB
+
+### Modifying Identification Logic
+
+The core identification logic is in `inabel.ai.pl`:
+- `identify_pattern_api/2` - Main identification predicate
+- `filter_patterns_by_responses/3` - Pattern filtering
+- `get_next_question/3` - Question selection
+- `main_json_loop/0` - JSON protocol handler
 
 ## 📄 License
 
@@ -258,21 +271,13 @@ This project is for educational purposes as part of an AI course project.
 - Traditional Ilocano weavers for preserving these patterns
 - Cultural heritage organizations for documentation
 - SWI-Prolog community
-- Flask and PySwip developers
-
-## 📞 Support
-
-For issues or questions:
-1. Check the documentation in `ARCHITECTURE.md`
-2. Review the backend README
-3. Test components individually
-4. Check the troubleshooting section in backend/README.md
+- Flask developers
 
 ## 🔄 Version History
 
-- **v2.0** - API-based architecture with Prolog backend
-- **v1.0** - Standalone JavaScript version
+- **v2.0** - Subprocess-based Prolog integration with JSON protocol
+- **v1.0** - Standalone JavaScript probabilistic version (see `backup/`)
 
 ---
 
-**Note**: This project demonstrates proper integration of a Prolog reasoning engine with modern web technologies. The logic is kept pure in Prolog while the interface remains user-friendly and accessible.
+**Note**: This project demonstrates proper integration of a Prolog reasoning engine with modern web technologies. The logic is kept pure in Prolog while the interface remains user-friendly and accessible through a REST API.
