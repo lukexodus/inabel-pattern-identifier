@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inabel Pattern Identifier - API Version</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1 class="title">
+                <i class="bi bi-palette"></i>
+                Inabel Pattern Identifier
+            </h1>
+            <p class="subtitle">Traditional Ilocano Textile Pattern Recognition System</p>
+            <div class="badge">
+                <i class="bi bi-cpu"></i>
+                Powered by Prolog AI
+            </div>
+        </header>
+
+        <!-- Welcome Screen -->
+        <div id="welcome-screen" class="screen active">
+            <div class="woven-card">
+                <h2>Welcome!</h2>
+                <p>This system uses artificial intelligence reasoning (Prolog) to help you identify traditional Inabel weaving patterns from the Ilocos region of the Philippines.</p>
+                
+                <div class="info-box">
+                    <i class="bi bi-info-circle"></i>
+                    <div>
+                        <strong>How it works:</strong>
+                        <p>I'll ask you questions about the visual features of the pattern. Based on your answers, the Prolog reasoning engine will identify which traditional Inabel pattern you're observing.</p>
+                    </div>
+                </div>
+
+                <div class="architecture-info">
+                    <h3><i class="bi bi-diagram-3"></i> System Architecture</h3>
+                    <div class="architecture-flow">
+                        <div class="arch-step">
+                            <i class="bi bi-display"></i>
+                            <span>Frontend (HTML/JS)</span>
+                        </div>
+                        <i class="bi bi-arrow-right"></i>
+                        <div class="arch-step">
+                            <i class="bi bi-hdd-network"></i>
+                            <span>Backend (Flask)</span>
+                        </div>
+                        <i class="bi bi-arrow-right"></i>
+                        <div class="arch-step">
+                            <i class="bi bi-file-code"></i>
+                            <span>Prolog KB</span>
+                        </div>
+                    </div>
+                    <p class="arch-description">
+                        The logic resides in Prolog (inabel.ai.pl), not JavaScript. 
+                        This ensures the reasoning engine is pure and maintainable.
+                    </p>
+                </div>
+
+                <button id="start-btn" class="btn btn-primary">
+                    <i class="bi bi-play-circle"></i>
+                    Start Identification
+                </button>
+
+                <div class="connection-status">
+                    <i class="bi bi-circle-fill text-success"></i>
+                    <span>Connected to Prolog backend</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Question Screen -->
+        <div id="question-screen" class="screen">
+            <div class="woven-card">
+                <div class="progress-container">
+                    <div class="progress-bar">
+                        <div id="progress-fill" class="progress-fill"></div>
+                    </div>
+                    <span id="progress-text" class="progress-text">Question 1</span>
+                </div>
+
+                <div class="question-box">
+                    <i class="bi bi-question-circle"></i>
+                    <p id="question-text">Does the pattern have geometric shapes?</p>
+                </div>
+
+                <div class="button-group">
+                    <button id="yes-btn" class="btn btn-yes">
+                        <i class="bi bi-check-circle"></i>
+                        Yes
+                    </button>
+                    <button id="no-btn" class="btn btn-no">
+                        <i class="bi bi-x-circle"></i>
+                        No
+                    </button>
+                </div>
+
+                <div class="prolog-indicator">
+                    <i class="bi bi-gear-fill spinning"></i>
+                    <span>Prolog reasoning engine active</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Result Screen -->
+        <div id="result-screen" class="screen">
+            <div id="result-box" class="result-box woven-card">
+                <!-- Result will be inserted here -->
+            </div>
+
+            <button id="restart-btn" class="btn btn-primary">
+                <i class="bi bi-arrow-clockwise"></i>
+                Identify Another Pattern
+            </button>
+        </div>
+
+        <footer class="footer">
+            <p>
+                <i class="bi bi-code-slash"></i>
+                Inabel AI Pattern Recognition System
+            </p>
+            <p class="tech-stack">
+                <span><i class="bi bi-filetype-html"></i> HTML/CSS/JS</span>
+                <span><i class="bi bi-filetype-py"></i> Python/Flask</span>
+                <span><i class="bi bi-file-code"></i> Prolog</span>
+            </p>
+            <p class="version">API Version 2.0</p>
+        </footer>
+    </div>
+
+    <script src="app-api.js"></script>
+
+    <style>
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            margin-top: 10px;
+        }
+
+        .architecture-info {
+            margin: 25px 0;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            border-left: 4px solid #667eea;
+        }
+
+        .architecture-info h3 {
+            margin: 0 0 15px 0;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .architecture-flow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .arch-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            padding: 15px 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .arch-step i {
+            font-size: 2em;
+            color: #667eea;
+        }
+
+        .arch-description {
+            text-align: center;
+            color: #666;
+            font-size: 0.9em;
+            margin-top: 10px;
+        }
+
+        .connection-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            justify-content: center;
+            margin-top: 20px;
+            padding: 10px;
+            background: #d4edda;
+            border-radius: 8px;
+            color: #155724;
+        }
+
+        .text-success {
+            color: #28a745;
+        }
+
+        .prolog-indicator {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+            padding: 10px;
+            background: #e7f3ff;
+            border-radius: 8px;
+            color: #004085;
+            font-size: 0.9em;
+        }
+
+        .spinning {
+            animation: spin 2s linear infinite;
+        }
+
+        @keyframes spin {
+            100% { transform: rotate(360deg); }
+        }
+
+        .api-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea22 0%, #764ba222 100%);
+            border-radius: 8px;
+            color: #667eea;
+            font-size: 0.9em;
+            font-weight: 500;
+        }
+
+        .tech-stack {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .tech-stack span {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .version {
+            color: #888;
+            font-size: 0.85em;
+            margin-top: 5px;
+        }
+    </style>
+</body>
+</html>
